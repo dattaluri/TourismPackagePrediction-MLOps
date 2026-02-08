@@ -1,7 +1,49 @@
-.config/
-sample_data/
-processed_data/
-trained_models/
+# Python
 __pycache__/
 *.pyc
+*.env
+
+# Environments
+.venv/
+env/
+venv/
+
+# Jupyter Notebook
 .ipynb_checkpoints/
+*.ipynb
+
+# Logs and Dumps
+*.log
+*.pkl\n*.joblib
+
+# Model artifacts and processed data
+*.pth
+*.bin
+*.pt
+results/
+processed_data/
+trained_models/
+
+# Exclude all CSV files by default
+*.csv
+
+# But explicitly include this specific file if it's needed for tracking
+!processed_data/X_train_encoded_columns.joblib
+
+# Hugging Face token
+hf_token
+
+# Application and deployment files (will be handled by explicit push to HF Space)
+model_loader.py
+prediction_pipeline.py
+app.py
+requirements.txt
+.gitattributes
+README.md
+Dockerfile
+
+# Wandb files
+wandb/
+
+# Ignore Google Drive mounted directory
+drive/
