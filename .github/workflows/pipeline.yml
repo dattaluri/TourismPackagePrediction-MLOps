@@ -1,14 +1,40 @@
-# Paste the content you got from !cat here, and then make your edits below.
-# For example:
 
 name: MLOps Pipeline
+
 on:
   push:
-    branches: [main]
+    branches:
+      - main
+  workflow_dispatch:
+
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-      # ... (rest of your .yml content with your modifications)
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+
+    - name: Install dependencies
+      run: pip install -r requirements.txt
+
+    - name: Run Data Processing Script
+      run: python data_processing.py
+
+    - name: Run Model Training Script
+      run: python model_training.py
+
+    - name: Register Model on Hugging Face Hub
+      env:
+        HF_TOKEN: ${{ secrets.HF_TOKEN }}
+      run: python model_registration.py
+
+    - name: Deploy to Hugging Face Space
+      env:
+        HF_TOKEN: ${{ secrets.HF_TOKEN }}
+      run: python push_to_hub.py
