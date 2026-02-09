@@ -1,50 +1,44 @@
 
 import joblib
 import os
-from huggingface_hub import HfApi, upload_file, create_repo
+from huggingface_hub import HfApi # Corrected import
 
-def run_model_registration():
-    # Define paths
-    # Use a dedicated repository for models
-    model_repo_id = "Dattaluri/TourismPackagePrediction-Model"
-    trained_models_dir = "trained_models"
-    model_filename = "best_model.joblib"
-    local_model_path = os.path.join(trained_models_dir, model_filename)
+# --- Constants for Hugging Face and local paths ---
+REPO_ID = "Dattaluri/TourismPackagePrediction"  # Your Hugging Face repository ID
 
-    # Ensure the trained_models directory exists (it would be created by model_training.py)
-    os.makedirs(trained_models_dir, exist_ok=True)
+# Local path where the best model is saved by model_training.py
+MODEL_LOCAL_PATH = "trained_models/gradient_boosting_model.joblib"
 
-    # Simulate loading the model (in a real GitHub Actions run, this file would already exist
-    # from the previous model_training.py step). For local testing, ensure a dummy model exists.
-    if not os.path.exists(local_model_path):
-        print(f"Warning: '{local_model_path}' not found. Creating a dummy model for registration.")
-        # Create a dummy model for local testing if it doesn't exist
-        from sklearn.ensemble import GradientBoostingClassifier
-        dummy_model = GradientBoostingClassifier(random_state=1)
-        # Save a dummy model locally for this script to pick up
-        joblib.dump(dummy_model, local_model_path)
+# Path within the Hugging Face repository where the model should be uploaded
+MODEL_HF_PATH = "trained_models/gradient_boosting_model.joblib"
 
-    print(f"Attempting to upload model from: {local_model_path}")
+def register_model_on_hf(
+    repo_id: str,
+    model_local_path: str,
+    model_hf_path: str
+):
+    """
+    Uploads a model file to the Hugging Face Model Hub using HfApi.
 
-    # Initialize Hugging Face API
+    Args:
+        repo_id (str): The Hugging Face repository ID (e.g., 'your-username/your-repo-name').
+        model_local_path (str): The local path to the model file to be uploaded.
+        model_hf_path (str): The path within the Hugging Face repository where the model will be stored.
+    """
     api = HfApi()
-
     try:
-        # Create the model repository if it doesn't exist
-        create_repo(repo_id=model_repo_id, repo_type="model", private=False, exist_ok=True)
-        print(f"Model repository '{model_repo_id}' created or already exists.")
-
-        upload_file(
-            repo_id=model_repo_id,
-            path_or_fileobj=local_model_path,
-            path_in_repo=model_filename, # Upload directly to the root of the model repo
-            repo_type="model",
-            commit_message=f"Upload best trained model ({model_filename})",
-            token=os.environ.get("HF_TOKEN") # Use token from environment
+        print(f"Uploading model from '{model_local_path}' to '{repo_id}/{model_hf_path}'...")
+        api.upload_file(
+            repo_id=repo_id,
+            path_or_fileobj=model_local_path,
+            path_in_repo=model_hf_path,
+            commit_message=f"Registering {os.path.basename(model_local_path)}"
         )
-        print(f"Successfully uploaded '{model_filename}' to Hugging Face Model Hub repository '{model_repo_id}'.")
+        print("Model successfully uploaded to Hugging Face Model Hub.")
     except Exception as e:
-        print(f"Error uploading model to repository: {e}")
+        print(f"Error uploading model to Hugging Face: {e}")
 
-if __name__ == "__main__":
-    run_model_registration()
+if __name__ == '__main__':
+    print("Starting model registration process...")
+    register_model_on_hf(REPO_ID, MODEL_LOCAL_PATH, MODEL_HF_PATH)
+    print("Model registration process completed.")

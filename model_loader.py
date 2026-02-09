@@ -15,8 +15,8 @@ def load_model_from_hf(repo_id, filename):
         object: The loaded model object.
     """
     try:
-        # Download the file from Hugging Face
-        local_file_path = hf_hub_download(repo_id=repo_id, filename=filename)
+        # Download the file from Hugging Face, passing the token
+        local_file_path = hf_hub_download(repo_id=repo_id, filename=filename, token=os.environ.get("HF_TOKEN"))
         print(f"Model file downloaded to: {local_file_path}")
 
         # Load the downloaded model
@@ -29,8 +29,8 @@ def load_model_from_hf(repo_id, filename):
 
 if __name__ == "__main__":
     # Define the Hugging Face repository ID and the filename within the repository
-    repo_id = "Dattaluri/TourismPackagePrediction-Model"
-    filename = "best_model.joblib"
+    repo_id = "Dattaluri/TourismPackagePrediction"
+    filename = "trained_models/gradient_boosting_model.joblib"
 
     # Load the model
     model = load_model_from_hf(repo_id, filename)

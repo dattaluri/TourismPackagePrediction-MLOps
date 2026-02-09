@@ -14,7 +14,8 @@ venv/
 
 # Logs and Dumps
 *.log
-*.pkl\n*.joblib
+*.pkl
+*.joblib
 
 # Model artifacts and processed data
 *.pth

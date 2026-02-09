@@ -9,8 +9,8 @@ import os
 MODEL = None
 X_TRAIN_ENCODED_COLUMNS = None
 
-REPO_ID = "Dattaluri/TourismPackagePrediction-Model"
-MODEL_FILENAME = "best_model.joblib"
+REPO_ID = "Dattaluri/TourismPackagePrediction"
+MODEL_FILENAME = "trained_models/gradient_boosting_model.joblib"
 COLUMNS_FILENAME = "processed_data/X_train_encoded_columns.joblib"
 
 def load_artifacts():
@@ -22,7 +22,7 @@ def load_artifacts():
 
     if MODEL is None:
         try:
-            model_path = hf_hub_download(repo_id=REPO_ID, filename=MODEL_FILENAME)
+            model_path = hf_hub_download(repo_id=REPO_ID, filename=MODEL_FILENAME, token=os.environ.get("HF_TOKEN"))
             MODEL = joblib.load(model_path)
             print(f"Model '{MODEL_FILENAME}' loaded successfully.")
         except Exception as e:
@@ -30,9 +30,7 @@ def load_artifacts():
 
     if X_TRAIN_ENCODED_COLUMNS is None:
         try:
-            # Assuming 'processed_data' is in the main data repo, not the model repo
-            columns_repo_id = "Dattaluri/TourismPackagePrediction"
-            columns_path = hf_hub_download(repo_id=columns_repo_id, filename=COLUMNS_FILENAME)
+            columns_path = hf_hub_download(repo_id=REPO_ID, filename=COLUMNS_FILENAME, token=os.environ.get("HF_TOKEN"))
             X_TRAIN_ENCODED_COLUMNS = joblib.load(columns_path)
             print(f"Columns '{COLUMNS_FILENAME}' loaded successfully.")
         except Exception as e:
